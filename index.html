@@ -1,104 +1,185 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Operasi Garis Bilangan</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      text-align: center;
-      background: #f7f7f7;
-      padding: 20px;
-    }
-    h1 { color: #2a6; }
-    #line {
-      margin: 40px auto;
-      position: relative;
-      width: 80%;
-      height: 4px;
-      background: black;
-    }
-    .tick {
-      position: absolute;
-      width: 2px;
-      height: 10px;
-      background: black;
-      bottom: -3px;
-    }
-    .number {
-      position: absolute;
-      bottom: -25px;
-      font-size: 14px;
-    }
-    .arrow {
-      position: absolute;
-      height: 2px;
-      background: red;
-      top: -2px;
-      transition: all 0.5s;
-    }
-    input, button {
-      margin: 5px;
-      padding: 5px 10px;
-      font-size: 16px;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Media Interaktif Garis Bilangan</title>
+<style>
+  body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(to bottom, #e3f2fd, #fff);
+    text-align: center;
+    padding: 20px;
+  }
+
+  h1 {
+    color: #1976d2;
+    margin-bottom: 10px;
+  }
+
+  .input-area {
+    margin: 15px 0;
+  }
+
+  input, select, button {
+    font-size: 16px;
+    padding: 5px 10px;
+    margin: 5px;
+    border-radius: 8px;
+    border: 1px solid #90caf9;
+  }
+
+  button {
+    background-color: #1976d2;
+    color: white;
+    cursor: pointer;
+  }
+
+  button:hover {
+    background-color: #0d47a1;
+  }
+
+  #numberLine {
+    position: relative;
+    width: 90%;
+    height: 4px;
+    background: #000;
+    margin: 50px auto 60px auto;
+  }
+
+  .tick {
+    position: absolute;
+    width: 2px;
+    height: 10px;
+    background: #000;
+    bottom: -3px;
+  }
+
+  .label {
+    position: absolute;
+    bottom: -25px;
+    font-size: 14px;
+    transform: translateX(-50%);
+  }
+
+  #arrow {
+    position: absolute;
+    height: 3px;
+    background: #43a047;
+    top: -1px;
+    left: 0;
+    width: 0;
+    border-radius: 2px;
+  }
+
+  .result {
+    font-size: 20px;
+    color: #1565c0;
+    margin-top: 15px;
+  }
+
+  .jump {
+    position: absolute;
+    top: -40px;
+    height: 40px;
+    border: 2px solid #43a047;
+    border-bottom: none;
+    border-radius: 50% 50% 0 0;
+    background: transparent;
+    animation: jump 1s ease-out forwards;
+  }
+
+  @keyframes jump {
+    0% { transform: scaleX(0); }
+    100% { transform: scaleX(1); }
+  }
+</style>
 </head>
 <body>
-  <h1>Operasi Penjumlahan & Pengurangan dengan Garis Bilangan</h1>
+  <h1>🧮 Garis Bilangan Interaktif</h1>
+  <p>Pelajari operasi penjumlahan dan pengurangan bilangan bulat dengan visualisasi interaktif!</p>
 
-  <div>
-    <label>Angka awal: </label>
-    <input type="number" id="start" value="0" />
-    <label>Operasi (+ / -): </label>
-    <input type="text" id="operator" value="+" maxlength="1" />
-    <label>Angka kedua: </label>
-    <input type="number" id="value" value="3" />
-    <button onclick="calculate()">Hitung</button>
+  <div class="input-area">
+    <label>Angka awal:</label>
+    <input type="number" id="start" value="0">
+    <label>Operasi:</label>
+    <select id="op">
+      <option value="+">+</option>
+      <option value="-">-</option>
+    </select>
+    <label>Angka kedua:</label>
+    <input type="number" id="step" value="3">
+    <button onclick="moveArrow()">Hitung</button>
   </div>
 
-  <div id="result"></div>
-  <div id="line"></div>
+  <div id="numberLine"></div>
+  <div class="result" id="resultText"></div>
 
-  <script>
-    const line = document.getElementById("line");
+<script>
+  const line = document.getElementById("numberLine");
+  const min = -10, max = 10;
+  const total = max - min;
+  const stepWidth = line.offsetWidth / total;
 
-    // Membuat garis bilangan -10 sampai 10
-    for (let i = -10; i <= 10; i++) {
-      const tick = document.createElement("div");
-      tick.className = "tick";
-      tick.style.left = ((i + 10) / 20) * 100 + "%";
-      line.appendChild(tick);
+  // Buat garis bilangan -10 sampai 10
+  for (let i = min; i <= max; i++) {
+    const tick = document.createElement("div");
+    tick.className = "tick";
+    tick.style.left = ((i - min) / total) * 100 + "%";
+    line.appendChild(tick);
 
-      const number = document.createElement("div");
-      number.className = "number";
-      number.textContent = i;
-      number.style.left = ((i + 10) / 20) * 100 - 1 + "%";
-      line.appendChild(number);
-    }
+    const label = document.createElement("div");
+    label.className = "label";
+    label.style.left = ((i - min) / total) * 100 + "%";
+    label.textContent = i;
+    line.appendChild(label);
+  }
 
-    function calculate() {
-      const start = parseInt(document.getElementById("start").value);
-      const op = document.getElementById("operator").value.trim();
-      const value = parseInt(document.getElementById("value").value);
+  // Panah posisi
+  const arrow = document.createElement("div");
+  arrow.id = "arrow";
+  line.appendChild(arrow);
 
-      let end = op === "+" ? start + value : start - value;
+  // Fungsi animasi perpindahan
+  function moveArrow() {
+    document.querySelectorAll(".jump").forEach(j => j.remove());
+    const start = parseInt(document.getElementById("start").value);
+    const op = document.getElementById("op").value;
+    const step = parseInt(document.getElementById("step").value);
+    let end = op === "+" ? start + step : start - step;
+    if (end > max) end = max;
+    if (end < min) end = min;
 
-      document.getElementById("result").innerHTML = 
-        `<h3>${start} ${op} ${value} = ${end}</h3>`;
+    const startPos = ((start - min) / total) * line.offsetWidth;
+    const endPos = ((end - min) / total) * line.offsetWidth;
+    arrow.style.left = startPos + "px";
+    arrow.style.width = "0px";
 
-      // hapus panah sebelumnya
-      document.querySelectorAll(".arrow").forEach(a => a.remove());
+    let direction = op === "+" ? 1 : -1;
+    let current = start;
 
-      const arrow = document.createElement("div");
-      arrow.className = "arrow";
-      arrow.style.left = ((start + 10) / 20) * 100 + "%";
-      arrow.style.width = (Math.abs(value) / 20) * 100 + "%";
-      arrow.style.background = op === "+" ? "green" : "red";
-      if (op === "-") arrow.style.left = ((end + 10) / 20) * 100 + "%";
-      line.appendChild(arrow);
-    }
-  </script>
+    // animasi melompat satu per satu
+    let i = 0;
+    const jumpInterval = setInterval(() => {
+      if (i >= Math.abs(step)) {
+        clearInterval(jumpInterval);
+        document.getElementById("resultText").textContent = `${start} ${op} ${step} = ${end}`;
+        return;
+      }
+
+      const next = current + direction;
+      const jump = document.createElement("div");
+      jump.className = "jump";
+      const posStart = ((current - min) / total) * line.offsetWidth;
+      const posEnd = ((next - min) / total) * line.offsetWidth;
+      jump.style.left = Math.min(posStart, posEnd) + "px";
+      jump.style.width = Math.abs(posEnd - posStart) + "px";
+      line.appendChild(jump);
+
+      current = next;
+      i++;
+    }, 500);
+  }
+</script>
 </body>
 </html>
