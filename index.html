@@ -1,194 +1,170 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Media Interaktif Garis Bilangan</title>
-  <style>
-    body {
-      font-family: 'Poppins', sans-serif;
-      background: linear-gradient(135deg, #b3e5fc, #fce4ec);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      margin: 0;
-    }
-    h1 {
-      color: #333;
-      margin-bottom: 8px;
-    }
-    .subtitle {
-      color: #555;
-      font-size: 0.95rem;
-      margin-bottom: 20px;
-    }
-    .controls {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 25px;
-    }
-    input, select, button {
-      font-size: 1rem;
-      padding: 6px 10px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-    }
-    button {
-      background: #4caf50;
-      color: white;
-      cursor: pointer;
-    }
-    button:hover {
-      background: #43a047;
-    }
-    .line-container {
-      position: relative;
-      width: 80%;
-      height: 120px;
-    }
-    .line {
-      position: absolute;
-      bottom: 40px;
-      left: 0;
-      right: 0;
-      height: 3px;
-      background: #333;
-    }
-    .tick {
-      position: absolute;
-      width: 2px;
-      height: 18px;
-      background: #333;
-      bottom: 38px;
-    }
-    .number {
-      position: absolute;
-      bottom: 10px;
-      font-size: 14px;
-      transform: translateX(-50%);
-      color: #111;
-    }
-    .jumper {
-      position: absolute;
-      bottom: 45px;
-      width: 25px;
-      height: 25px;
-      background: gold;
-      border-radius: 50%;
-      border: 2px solid #555;
-      transform: translateX(-50%);
-      transition: left 0.6s ease-in-out, bottom 0.3s ease;
-    }
-    .jump-label {
-      position: absolute;
-      font-size: 13px;
-      color: #000;
-      font-weight: bold;
-      transform: translate(-50%, -60px);
-      opacity: 0;
-      transition: opacity 0.4s ease;
-    }
-    .result {
-      font-size: 1.2rem;
-      margin-top: 15px;
-      color: #222;
-      background: rgba(255, 255, 255, 0.6);
-      padding: 8px 16px;
-      border-radius: 10px;
-      box-shadow: 0 0 8px rgba(0,0,0,0.1);
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Garis Bilangan Interaktif</title>
+<style>
+  body {
+    font-family: "Poppins", sans-serif;
+    text-align: center;
+    background: linear-gradient(180deg, #f0f9ff, #cbebff);
+    min-height: 100vh;
+    padding-top: 40px;
+  }
+  h1 {
+    color: #005fa3;
+  }
+  #garis-bilangan {
+    position: relative;
+    width: 80%;
+    height: 120px;
+    margin: 50px auto;
+    border-top: 4px solid black;
+  }
+  .angka {
+    position: absolute;
+    top: 20px;
+    transform: translateX(-50%);
+    font-weight: bold;
+  }
+  .tanda {
+    position: absolute;
+    width: 2px;
+    height: 15px;
+    background-color: black;
+    top: -6px;
+    transform: translateX(-50%);
+  }
+  #bola {
+    position: absolute;
+    bottom: 40px;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background-color: gold;
+    border: 2px solid orange;
+    transition: left 0.7s ease;
+    z-index: 3;
+  }
+  .jejak {
+    position: absolute;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background-color: red;
+    bottom: 55px;
+    z-index: 1;
+  }
+  input, button {
+    margin: 5px;
+    padding: 8px;
+    font-size: 16px;
+    border-radius: 8px;
+  }
+  button {
+    cursor: pointer;
+    background-color: #005fa3;
+    color: white;
+    border: none;
+  }
+  button:hover {
+    background-color: #0078d4;
+  }
+  #hasil {
+    margin-top: 20px;
+    font-size: 20px;
+    color: #333;
+  }
+</style>
 </head>
 <body>
-  <h1>🎨 Garis Bilangan Interaktif</h1>
-  <div class="subtitle">Mari belajar penjumlahan dan pengurangan bilangan bulat!</div>
-
-  <div class="controls">
-    <input type="number" id="num1" placeholder="Bilangan 1" value="5">
-    <select id="operator">
-      <option value="+">+</option>
-      <option value="-">−</option>
-    </select>
-    <input type="number" id="num2" placeholder="Bilangan 2" value="3">
-    <button onclick="mulai()">Mulai!</button>
+  <h1>🟡 Garis Bilangan Interaktif</h1>
+  <p>Masukkan bilangan dan pilih operasi untuk melihat pergerakan bola kuning.</p>
+  <div>
+    <label>Bilangan:</label>
+    <input type="number" id="inputAngka" value="1" min="-10" max="10">
+    <button onclick="tambah()">➕ Tambah</button>
+    <button onclick="kurang()">➖ Kurang</button>
+    <button onclick="reset()">🔄 Reset</button>
   </div>
 
-  <div class="line-container" id="garis"></div>
-  <div class="result" id="hasil"></div>
+  <div id="garis-bilangan"></div>
+  <div id="hasil"></div>
 
   <script>
-    const garis = document.getElementById('garis');
-    const hasilText = document.getElementById('hasil');
+    const garis = document.getElementById("garis-bilangan");
+    const hasil = document.getElementById("hasil");
     const min = -10, max = 10;
-    const range = max - min;
-    garis.innerHTML = '';
+    const step = garis.offsetWidth / (max - min);
+    let posisi = 0;
 
-    // Buat garis dan angka
-    const line = document.createElement('div');
-    line.className = 'line';
-    garis.appendChild(line);
-
+    // Membuat garis bilangan
     for (let i = min; i <= max; i++) {
-      const tick = document.createElement('div');
-      tick.className = 'tick';
-      tick.style.left = `${((i - min) / range) * 100}%`;
-      garis.appendChild(tick);
+      const x = ((i - min) / (max - min)) * garis.offsetWidth;
+      const tanda = document.createElement("div");
+      tanda.classList.add("tanda");
+      tanda.style.left = `${x}px`;
+      garis.appendChild(tanda);
 
-      const number = document.createElement('div');
-      number.className = 'number';
-      number.textContent = i;
-      number.style.left = tick.style.left;
-      garis.appendChild(number);
+      const angka = document.createElement("div");
+      angka.classList.add("angka");
+      angka.style.left = `${x}px`;
+      angka.textContent = i;
+      garis.appendChild(angka);
     }
 
-    // Bola
-    const jumper = document.createElement('div');
-    jumper.className = 'jumper';
-    garis.appendChild(jumper);
+    // Buat bola kuning di tengah (0)
+    const bola = document.createElement("div");
+    bola.id = "bola";
+    garis.appendChild(bola);
+    function updatePosisi() {
+      const left = ((posisi - min) / (max - min)) * garis.offsetWidth;
+      bola.style.left = `${left}px`;
+    }
+    updatePosisi();
 
-    // Animasi langkah
-    function mulai() {
-      hasilText.textContent = '';
-      document.querySelectorAll('.jump-label').forEach(e => e.remove());
-      const a = parseInt(document.getElementById('num1').value);
-      const b = parseInt(document.getElementById('num2').value);
-      const op = document.getElementById('operator').value;
+    // Ganti warna bola setiap lompatan
+    const warnaBola = ["gold", "orange", "limegreen", "deepskyblue", "violet", "salmon"];
 
-      let hasil = op === '+' ? a + b : a - b;
-      hasilText.textContent = `📘 Hasil: ${a} ${op} ${b} = ${hasil}`;
-
-      let posisi = a;
-      let langkah = op === '+' ? 1 : -1;
-      let i = 0;
-      animasiLompat(a);
-
+    function lompat(arah, jumlah) {
+      let langkah = 0;
       const interval = setInterval(() => {
-        if (i === Math.abs(b)) {
+        if (langkah === Math.abs(jumlah)) {
           clearInterval(interval);
+          hasil.textContent = `Posisi akhir: ${posisi}`;
           return;
         }
-        posisi += langkah;
-        animasiLompat(posisi, i + 1);
-        i++;
-      }, 700);
+        posisi += arah;
+        const jejak = document.createElement("div");
+        jejak.classList.add("jejak");
+        const left = ((posisi - min) / (max - min)) * garis.offsetWidth;
+        jejak.style.left = `${left}px`;
+        garis.appendChild(jejak);
+        bola.style.backgroundColor = warnaBola[Math.floor(Math.random() * warnaBola.length)];
+        updatePosisi();
+        langkah++;
+      }, 500);
     }
 
-    function animasiLompat(nilai, urutan = 0) {
-      const persen = ((nilai - min) / range) * 100;
-      jumper.style.left = `${persen}%`;
-      jumper.style.background = urutan % 2 === 0 ? "#fbc02d" : "#ff7043";
-      jumper.style.bottom = "70px";
-      setTimeout(() => (jumper.style.bottom = "45px"), 300);
+    function tambah() {
+      const n = parseInt(document.getElementById("inputAngka").value);
+      if (posisi + n > max) return alert("Keluar dari batas garis!");
+      lompat(1, n);
+    }
 
-      // Label angka muncul di atas setiap loncatan
-      const label = document.createElement('div');
-      label.className = 'jump-label';
-      label.textContent = nilai;
-      label.style.left = `${persen}%`;
-      garis.appendChild(label);
-      setTimeout(() => (label.style.opacity = 1), 200);
+    function kurang() {
+      const n = parseInt(document.getElementById("inputAngka").value);
+      if (posisi - n < min) return alert("Keluar dari batas garis!");
+      lompat(-1, n);
+    }
+
+    function reset() {
+      posisi = 0;
+      hasil.textContent = "";
+      garis.querySelectorAll(".jejak").forEach(j => j.remove());
+      bola.style.backgroundColor = "gold";
+      updatePosisi();
     }
   </script>
 </body>
