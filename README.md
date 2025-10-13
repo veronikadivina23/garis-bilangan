@@ -1,2 +1,2 @@
-# Penguranga_Bilangan Bulat
+# Pengurangan_Bilangan Bulat
 Operasi penjumlahan menggunakan garis bilangan
