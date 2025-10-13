@@ -4,13 +4,10 @@ const ctx = canvas.getContext('2d');
 let viewMin = -10;
 let viewMax = 10;
 
-// Karakter lucu (hanya untuk bilangan pertama)
-const charRed = "🐰"; 
-
+// Fungsi gambar garis bilangan
 function drawNumberLine(min = viewMin, max = viewMax) {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  // Garis horizontal
   ctx.beginPath();
   ctx.moveTo(50, 150);
   ctx.lineTo(850, 150);
@@ -21,7 +18,6 @@ function drawNumberLine(min = viewMin, max = viewMax) {
   const totalNumbers = max - min;
   const step = 800 / totalNumbers;
 
-  // Skala dan bilangan
   ctx.font = "16px Arial";
   for (let i = min; i <= max; i++) {
     const x = 50 + (i - min) * step;
@@ -35,7 +31,7 @@ function drawNumberLine(min = viewMin, max = viewMax) {
   return step;
 }
 
-// Garis putus-putus dengan label di atas, jarak lebih lebar
+// Garis putus-putus dengan label di atas
 function drawDashedLineWithLabel(start, end, color, step, min, label, yOffset) {
   const xStart = 50 + (start - min) * step;
   const xEnd = 50 + (end - min) * step;
@@ -45,7 +41,7 @@ function drawDashedLineWithLabel(start, end, color, step, min, label, yOffset) {
   ctx.moveTo(xStart, yOffset);
   ctx.lineTo(xEnd, yOffset);
   ctx.strokeStyle = color;
-  ctx.lineWidth = 3;
+  ctx.lineWidth = 2;
   ctx.stroke();
   ctx.setLineDash([]);
 
@@ -58,48 +54,38 @@ function drawDashedLineWithLabel(start, end, color, step, min, label, yOffset) {
   ctx.fillStyle = color;
   ctx.fill();
 
-  // Label bilangan kecil di atas garis
+  // Label bilangan di atas (lebih kecil)
   ctx.fillStyle = color;
   ctx.font = "14px Arial";
-  ctx.fillText(label, (xStart + xEnd)/2 - 10, yOffset - 12);
+  ctx.fillText(label, (xStart + xEnd)/2 - 8, yOffset - 12);
 }
 
-// Lingkari hasil
-function drawResultCircle(position, step, min) {
-  const x = 50 + (position - min) * step;
-  ctx.beginPath();
-  ctx.arc(x, 150, 12, 0, 2 * Math.PI);
-  ctx.strokeStyle = "green";
-  ctx.lineWidth = 3;
-  ctx.stroke();
-}
-
-// Animasi lompat-lompat karakter (hanya bilangan pertama)
-function animateCharacter(start, end, char, step, min, callback) {
+// Animasi bundaran kecil per langkah
+function animateSteps(start, end, color, step, min, callback) {
   let current = start;
   const increment = (end > start) ? 1 : -1;
 
-  function jump() {
+  function stepAnimation() {
     drawNumberLine(viewMin, viewMax);
 
-    // Jejak titik karakter
+    // Jejak semua langkah
     for (let pos = start; (increment>0) ? pos<=current : pos>=current; pos+=increment) {
       const xTrail = 50 + (pos - min) * step;
-      ctx.fillText(char, xTrail-8, 150); 
+      ctx.beginPath();
+      ctx.arc(xTrail, 150, 5, 0, 2*Math.PI);
+      ctx.fillStyle = color;
+      ctx.fill();
     }
-
-    const x = 50 + (current - min) * step;
-    ctx.fillText(char, x-8, 150);
 
     if (current !== end) {
       current += increment;
-      setTimeout(jump, 300);
+      setTimeout(stepAnimation, 200);
     } else {
       callback();
     }
   }
 
-  jump();
+  stepAnimation();
 }
 
 // Sesuaikan view
@@ -122,25 +108,29 @@ document.getElementById('startBtn').addEventListener('click', () => {
     return;
   }
 
-  // Jika bilangan kedua negatif, tampilkan dengan kurung di result
   let displayNum2 = (num2 < 0) ? `(${num2})` : num2;
 
   adjustView(num1, num2);
   const step = drawNumberLine(viewMin, viewMax);
 
-  animateCharacter(0, num1, charRed, step, viewMin, () => {
-    // Gambar garis putus-putus bilangan pertama
-    drawDashedLineWithLabel(0, num1, "red", step, viewMin, num1, 120);
-    // Gambar garis putus-putus bilangan kedua, jarak lebih tinggi agar tidak bertabrakan
-    drawDashedLineWithLabel(num1, num1 - num2, "blue", step, viewMin, displayNum2, 90);
+  // Langkah bilangan pertama
+  animateSteps(0, num1, "red", step, viewMin, () => {
+    // Langkah bilangan kedua
+    animateSteps(num1, num1 - num2, "blue", step, viewMin, () => {
+      // Garis putus-putus
+      drawDashedLineWithLabel(0, num1, "red", step, viewMin, num1, 130);
+      drawDashedLineWithLabel(num1, num1 - num2, "blue", step, viewMin, displayNum2, 105);
 
-    // Lingkari hasil
-    drawResultCircle(num1 - num2, step, viewMin);
+      // Tandai hasil di garis bilangan (angka tebal hijau)
+      const xHasil = 50 + ((num1 - num2) - viewMin) * step;
+      ctx.fillStyle = "green";
+      ctx.font = "bold 18px Arial";
+      ctx.fillText(num1 - num2, xHasil-10, 150);
 
-    // Tampilkan hasil di kotak menarik
-    const resultDiv = document.getElementById('result');
-    const hasil = num1 - num2;
-    resultDiv.textContent = `${num1} - ${displayNum2} = ${hasil}`;
+      // Tampilkan hasil di kotak menarik
+      const resultDiv = document.getElementById('result');
+      resultDiv.textContent = `${num1} - ${displayNum2} = ${num1 - num2}`;
+    });
   });
 });
 
