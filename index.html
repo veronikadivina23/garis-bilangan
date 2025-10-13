@@ -10,22 +10,31 @@
 
 <h2>Operasi Pengurangan Bilangan Bulat</h2>
 
-<div>
-  Bilangan Pertama: <input type="number" id="num1" min="-25" max="25">
-  <span style="font-size: 24px;"> - </span>
-  Bilangan Kedua: <input type="number" id="num2" min="-25" max="25">
+<div id="input-container">
+  <div style="display: inline-block; text-align: center; margin:0 40px;">
+    <div>Bilangan Pertama</div>
+    <input type="number" id="num1" min="-25" max="25">
+  </div>
+  <div style="display: inline-block; text-align: center; margin:0 20px;">
+    <div style="font-size:24px;"> - </div>
+  </div>
+  <div style="display: inline-block; text-align: center; margin:0 40px;">
+    <div>Bilangan Kedua</div>
+    <input type="number" id="num2" min="-25" max="25">
+  </div>
 </div>
-<div>
+
+<div style="margin-top:10px;">
   <button id="startBtn">Mulai</button>
   <button id="refreshBtn">Refresh</button>
 </div>
 
 <div id="container">
-  <canvas id="lineCanvas" width="900" height="200"></canvas>
+  <canvas id="lineCanvas" width="900" height="250"></canvas>
 </div>
 
-<div id="result" style="font-size: 20px; margin-top: 10px; font-weight: bold;"></div>
+<div id="result" class="result-box"></div>
 
-</body>
 <script src="script.js"></script>
+</body>
 </html>
