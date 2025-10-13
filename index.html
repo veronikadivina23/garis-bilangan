@@ -8,54 +8,80 @@
   body {
     font-family: "Poppins", sans-serif;
     text-align: center;
-    background: linear-gradient(180deg, #f0f9ff, #cbebff);
+    background: linear-gradient(180deg, #e0f7ff, #cce5ff);
     min-height: 100vh;
     padding-top: 40px;
   }
   h1 {
     color: #005fa3;
+    text-shadow: 1px 1px #fff;
   }
   #garis-bilangan {
     position: relative;
     width: 80%;
-    height: 120px;
-    margin: 50px auto;
+    height: 180px;
+    margin: 60px auto;
     border-top: 4px solid black;
+    overflow: visible;
   }
   .angka {
     position: absolute;
-    top: 20px;
+    top: 40px;
     transform: translateX(-50%);
     font-weight: bold;
+    font-size: 16px;
   }
   .tanda {
     position: absolute;
     width: 2px;
     height: 15px;
     background-color: black;
-    top: -6px;
+    top: 0;
     transform: translateX(-50%);
   }
   #bola {
     position: absolute;
-    bottom: 40px;
-    width: 30px;
-    height: 30px;
+    bottom: 70px;
+    width: 35px;
+    height: 35px;
     border-radius: 50%;
     background-color: gold;
     border: 2px solid orange;
-    transition: left 0.7s ease;
+    transition: left 0.5s ease, background-color 0.3s;
     z-index: 3;
   }
   .jejak {
     position: absolute;
-    width: 5px;
-    height: 5px;
+    width: 7px;
+    height: 7px;
     border-radius: 50%;
     background-color: red;
-    bottom: 55px;
+    bottom: 85px;
     z-index: 1;
   }
+  .panah {
+    position: absolute;
+    bottom: 120px;
+    width: 0;
+    height: 0;
+    border-top: 3px solid transparent;
+    border-bottom: 3px solid transparent;
+    z-index: 2;
+  }
+  .panah::before {
+    content: "";
+    position: absolute;
+    width: 60px;
+    height: 20px;
+    border-top: 3px solid;
+    border-radius: 50%;
+    animation: muncul 0.8s ease forwards;
+  }
+  @keyframes muncul {
+    from { width: 0; opacity: 0; }
+    to { width: 60px; opacity: 1; }
+  }
+
   input, button {
     margin: 5px;
     padding: 8px;
@@ -80,7 +106,8 @@
 </head>
 <body>
   <h1>🟡 Garis Bilangan Interaktif</h1>
-  <p>Masukkan bilangan dan pilih operasi untuk melihat pergerakan bola kuning.</p>
+  <p>Masukkan bilangan dan pilih operasi untuk melihat pergerakan bola kuning dengan animasi & suara!</p>
+
   <div>
     <label>Bilangan:</label>
     <input type="number" id="inputAngka" value="1" min="-10" max="10">
@@ -92,14 +119,17 @@
   <div id="garis-bilangan"></div>
   <div id="hasil"></div>
 
+  <audio id="popSound" src="https://actions.google.com/sounds/v1/cartoon/pop.ogg"></audio>
+
   <script>
     const garis = document.getElementById("garis-bilangan");
     const hasil = document.getElementById("hasil");
+    const popSound = document.getElementById("popSound");
     const min = -10, max = 10;
     const step = garis.offsetWidth / (max - min);
     let posisi = 0;
 
-    // Membuat garis bilangan
+    // Buat garis bilangan
     for (let i = min; i <= max; i++) {
       const x = ((i - min) / (max - min)) * garis.offsetWidth;
       const tanda = document.createElement("div");
@@ -114,7 +144,7 @@
       garis.appendChild(angka);
     }
 
-    // Buat bola kuning di tengah (0)
+    // Buat bola kuning
     const bola = document.createElement("div");
     bola.id = "bola";
     garis.appendChild(bola);
@@ -124,8 +154,19 @@
     }
     updatePosisi();
 
-    // Ganti warna bola setiap lompatan
     const warnaBola = ["gold", "orange", "limegreen", "deepskyblue", "violet", "salmon"];
+
+    function buatPanah(arah, posisiSekarang) {
+      const panah = document.createElement("div");
+      panah.classList.add("panah");
+      const left = ((posisiSekarang - min) / (max - min)) * garis.offsetWidth;
+      panah.style.left = `${left + (arah === 1 ? 5 : -65)}px`;
+      panah.style.borderColor = arah === 1 ? "green" : "orange";
+      panah.querySelector;
+      panah.innerHTML = `<div style="border-top-color:${arah === 1 ? 'green' : 'orange'}"></div>`;
+      garis.appendChild(panah);
+      setTimeout(() => panah.remove(), 1200);
+    }
 
     function lompat(arah, jumlah) {
       let langkah = 0;
@@ -136,15 +177,24 @@
           return;
         }
         posisi += arah;
+        popSound.currentTime = 0;
+        popSound.play();
+
+        // buat jejak merah
         const jejak = document.createElement("div");
         jejak.classList.add("jejak");
         const left = ((posisi - min) / (max - min)) * garis.offsetWidth;
         jejak.style.left = `${left}px`;
         garis.appendChild(jejak);
+
+        // panah animasi
+        buatPanah(arah, posisi);
+
+        // ubah warna bola
         bola.style.backgroundColor = warnaBola[Math.floor(Math.random() * warnaBola.length)];
         updatePosisi();
         langkah++;
-      }, 500);
+      }, 600);
     }
 
     function tambah() {
