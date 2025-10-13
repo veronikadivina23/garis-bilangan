@@ -4,8 +4,9 @@ const ctx = canvas.getContext('2d');
 let viewMin = -10;
 let viewMax = 10;
 
-// Karakter lucu (hanya untuk bilangan pertama)
-const charRed = "🐰"; 
+// Karakter lucu
+const charRed = "🐰"; // bilangan pertama
+const charBlue = "🐱"; // bilangan kedua
 
 function drawNumberLine(min = viewMin, max = viewMax) {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -35,7 +36,7 @@ function drawNumberLine(min = viewMin, max = viewMax) {
   return step;
 }
 
-// Garis putus-putus dengan label di atas, jarak lebih lebar
+// Garis putus-putus dengan label di atas
 function drawDashedLineWithLabel(start, end, color, step, min, label, yOffset) {
   const xStart = 50 + (start - min) * step;
   const xEnd = 50 + (end - min) * step;
@@ -64,31 +65,35 @@ function drawDashedLineWithLabel(start, end, color, step, min, label, yOffset) {
   ctx.fillText(label, (xStart + xEnd)/2 - 10, yOffset - 12);
 }
 
-// Lingkari hasil
-function drawResultCircle(position, step, min) {
+// Highlight hasil di angka hasilnya
+function highlightResult(position, step, min) {
   const x = 50 + (position - min) * step;
-  ctx.beginPath();
-  ctx.arc(x, 150, 12, 0, 2 * Math.PI);
-  ctx.strokeStyle = "green";
-  ctx.lineWidth = 3;
-  ctx.stroke();
+  const y = 150;
+  ctx.fillStyle = "rgba(144,238,144,0.6)"; // light green
+  ctx.fillRect(x-12, y-12, 24, 24);
+  ctx.fillStyle = "green";
+  ctx.font = "16px Arial";
+  ctx.fillText(position, x-5, y+5);
 }
 
-// Animasi lompat-lompat karakter (hanya bilangan pertama)
-function animateCharacter(start, end, char, step, min, callback) {
+// Animasi lompat-lompat karakter dengan cek tabrakan
+function animateCharacter(start, end, char, step, min, callback, otherCharPos = null) {
   let current = start;
   const increment = (end > start) ? 1 : -1;
 
   function jump() {
     drawNumberLine(viewMin, viewMax);
 
-    // Jejak titik karakter
+    const xOther = (otherCharPos !== null) ? 50 + (otherCharPos - min) * step : null;
+
     for (let pos = start; (increment>0) ? pos<=current : pos>=current; pos+=increment) {
       const xTrail = 50 + (pos - min) * step;
+      ctx.font = (xOther !== null && xTrail === xOther) ? "12px Arial" : "16px Arial";
       ctx.fillText(char, xTrail-8, 150); 
     }
 
     const x = 50 + (current - min) * step;
+    ctx.font = (xOther !== null && x === xOther) ? "12px Arial" : "16px Arial";
     ctx.fillText(char, x-8, 150);
 
     if (current !== end) {
@@ -106,7 +111,6 @@ function animateCharacter(start, end, char, step, min, callback) {
 function adjustView(num1, num2) {
   let minVisible = Math.min(0, num1, num1 - num2);
   let maxVisible = Math.max(0, num1, num1 - num2);
-
   if (minVisible < viewMin || maxVisible > viewMax) {
     viewMin = minVisible - 5;
     viewMax = maxVisible + 5;
@@ -122,25 +126,26 @@ document.getElementById('startBtn').addEventListener('click', () => {
     return;
   }
 
-  // Jika bilangan kedua negatif, tampilkan dengan kurung di result
   let displayNum2 = (num2 < 0) ? `(${num2})` : num2;
 
   adjustView(num1, num2);
   const step = drawNumberLine(viewMin, viewMax);
 
+  // Animasi kelinci
   animateCharacter(0, num1, charRed, step, viewMin, () => {
-    // Gambar garis putus-putus bilangan pertama
-    drawDashedLineWithLabel(0, num1, "red", step, viewMin, num1, 120);
-    // Gambar garis putus-putus bilangan kedua, jarak lebih tinggi agar tidak bertabrakan
-    drawDashedLineWithLabel(num1, num1 - num2, "blue", step, viewMin, displayNum2, 90);
+    // Animasi kucing, posisi kelinci sebagai referensi tabrakan
+    animateCharacter(num1, num1 - num2, charBlue, step, viewMin, () => {
+      drawDashedLineWithLabel(0, num1, "red", step, viewMin, num1, 120);
+      drawDashedLineWithLabel(num1, num1 - num2, "blue", step, viewMin, displayNum2, 90);
 
-    // Lingkari hasil
-    drawResultCircle(num1 - num2, step, viewMin);
+      // Highlight hasil
+      highlightResult(num1 - num2, step, viewMin);
 
-    // Tampilkan hasil di kotak menarik
-    const resultDiv = document.getElementById('result');
-    const hasil = num1 - num2;
-    resultDiv.textContent = `${num1} - ${displayNum2} = ${hasil}`;
+      // Tampilkan hasil di kotak
+      const resultDiv = document.getElementById('result');
+      const hasil = num1 - num2;
+      resultDiv.textContent = `${num1} - ${displayNum2} = ${hasil}`;
+    }, num1); // posisi kelinci
   });
 });
 
@@ -153,5 +158,4 @@ document.getElementById('refreshBtn').addEventListener('click', () => {
   drawNumberLine();
 });
 
-// Inisialisasi
 drawNumberLine();
