@@ -2,21 +2,7 @@ body {
   font-family: 'Comic Sans MS', cursive, sans-serif;
   padding: 20px;
   text-align: center;
-  background: linear-gradient(to bottom, #a1c4fd, #c2e9fb);
-  position: relative;
-}
-
-/* Tambahkan pola lucu sederhana: awan */
-body::before {
-  content: "☁️ ☁️  ☁️   ☁️ ☁️";
-  font-size: 50px;
-  position: absolute;
-  top: 20px;
-  left: 0;
-  width: 100%;
-  color: rgba(255, 255, 255, 0.3);
-  z-index: 0;
-  pointer-events: none;
+  background: linear-gradient(to bottom, #ffefba, #ffffff);
 }
 
 #container {
@@ -27,13 +13,10 @@ body::before {
   border: 2px solid #ffcc00;
   border-radius: 15px;
   box-shadow: 5px 5px 15px rgba(0,0,0,0.2);
-  z-index: 1;
 }
 
 canvas {
   background-color: #fff8dc;
-  position: relative;
-  z-index: 1;
 }
 
 input {
