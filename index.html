@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Operasi Garis Bilangan</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background: #f7f7f7;
+      padding: 20px;
+    }
+    h1 { color: #2a6; }
+    #line {
+      margin: 40px auto;
+      position: relative;
+      width: 80%;
+      height: 4px;
+      background: black;
+    }
+    .tick {
+      position: absolute;
+      width: 2px;
+      height: 10px;
+      background: black;
+      bottom: -3px;
+    }
+    .number {
+      position: absolute;
+      bottom: -25px;
+      font-size: 14px;
+    }
+    .arrow {
+      position: absolute;
+      height: 2px;
+      background: red;
+      top: -2px;
+      transition: all 0.5s;
+    }
+    input, button {
+      margin: 5px;
+      padding: 5px 10px;
+      font-size: 16px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Operasi Penjumlahan & Pengurangan dengan Garis Bilangan</h1>
+
+  <div>
+    <label>Angka awal: </label>
+    <input type="number" id="start" value="0" />
+    <label>Operasi (+ / -): </label>
+    <input type="text" id="operator" value="+" maxlength="1" />
+    <label>Angka kedua: </label>
+    <input type="number" id="value" value="3" />
+    <button onclick="calculate()">Hitung</button>
+  </div>
+
+  <div id="result"></div>
+  <div id="line"></div>
+
+  <script>
+    const line = document.getElementById("line");
+
+    // Membuat garis bilangan -10 sampai 10
+    for (let i = -10; i <= 10; i++) {
+      const tick = document.createElement("div");
+      tick.className = "tick";
+      tick.style.left = ((i + 10) / 20) * 100 + "%";
+      line.appendChild(tick);
+
+      const number = document.createElement("div");
+      number.className = "number";
+      number.textContent = i;
+      number.style.left = ((i + 10) / 20) * 100 - 1 + "%";
+      line.appendChild(number);
+    }
+
+    function calculate() {
+      const start = parseInt(document.getElementById("start").value);
+      const op = document.getElementById("operator").value.trim();
+      const value = parseInt(document.getElementById("value").value);
+
+      let end = op === "+" ? start + value : start - value;
+
+      document.getElementById("result").innerHTML = 
+        `<h3>${start} ${op} ${value} = ${end}</h3>`;
+
+      // hapus panah sebelumnya
+      document.querySelectorAll(".arrow").forEach(a => a.remove());
+
+      const arrow = document.createElement("div");
+      arrow.className = "arrow";
+      arrow.style.left = ((start + 10) / 20) * 100 + "%";
+      arrow.style.width = (Math.abs(value) / 20) * 100 + "%";
+      arrow.style.background = op === "+" ? "green" : "red";
+      if (op === "-") arrow.style.left = ((end + 10) / 20) * 100 + "%";
+      line.appendChild(arrow);
+    }
+  </script>
+</body>
+</html>
