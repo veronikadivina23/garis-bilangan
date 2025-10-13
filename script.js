@@ -1,8 +1,8 @@
 const canvas = document.getElementById('lineCanvas');
 const ctx = canvas.getContext('2d');
 
-let viewMin = -15;
-let viewMax = 15;
+let viewMin = -10; // tampilan awal
+let viewMax = 10;
 
 // Gambar garis bilangan
 function drawNumberLine(min = viewMin, max = viewMax) {
@@ -31,7 +31,7 @@ function drawNumberLine(min = viewMin, max = viewMax) {
   return step;
 }
 
-// Garis putus-putus dengan label di atas
+// Garis putus-putus dengan label
 function drawDashedLineWithLabel(start, end, color, step, min, label, yOffset) {
   const xStart = 50 + (start - min) * step;
   const xEnd = 50 + (end - min) * step;
@@ -54,13 +54,13 @@ function drawDashedLineWithLabel(start, end, color, step, min, label, yOffset) {
   ctx.fillStyle = color;
   ctx.fill();
 
-  // Label bilangan mepet dengan garis
+  // Label mepet
   ctx.fillStyle = color;
   ctx.font = "12px Arial";
   ctx.fillText(label, (xStart + xEnd)/2 - 6, yOffset - 5);
 }
 
-// Animasi bundaran kecil per langkah (lebih kecil)
+// Animasi bundaran kecil per langkah
 function animateSteps(start, end, color, step, min, callback) {
   let current = start;
   const increment = (end > start) ? 1 : -1;
@@ -68,11 +68,10 @@ function animateSteps(start, end, color, step, min, callback) {
   function stepAnimation() {
     drawNumberLine(viewMin, viewMax);
 
-    // Jejak semua langkah
     for (let pos = start; (increment>0) ? pos<=current : pos>=current; pos+=increment) {
       const xTrail = 50 + (pos - min) * step;
       ctx.beginPath();
-      ctx.arc(xTrail, 150, 3, 0, 2*Math.PI); // bundaran lebih kecil
+      ctx.arc(xTrail, 150, 3, 0, 2*Math.PI);
       ctx.fillStyle = color;
       ctx.fill();
     }
@@ -97,10 +96,14 @@ function drawResultCircle(position, step, min) {
   ctx.fill();
 }
 
-// Sesuaikan view
+// Sesuaikan view agar angka selalu terlihat
 function adjustView(num1, num2) {
-  viewMin = -15;
-  viewMax = 15;
+  const result = num1 - num2;
+  let minVisible = Math.min(-10, num1, result) - 2;
+  let maxVisible = Math.max(10, num1, result) + 2;
+
+  viewMin = minVisible;
+  viewMax = maxVisible;
 }
 
 document.getElementById('startBtn').addEventListener('click', () => {
@@ -117,18 +120,13 @@ document.getElementById('startBtn').addEventListener('click', () => {
   adjustView(num1, num2);
   const step = drawNumberLine(viewMin, viewMax);
 
-  // Bundaran merah bilangan pertama
   animateSteps(0, num1, "red", step, viewMin, () => {
-    // Bundaran biru bilangan kedua
     animateSteps(num1, num1 - num2, "blue", step, viewMin, () => {
-      // Garis putus-putus
-      drawDashedLineWithLabel(0, num1, "red", step, viewMin, num1, 140); // bilangan pertama
-      drawDashedLineWithLabel(num1, num1 - num2, "blue", step, viewMin, displayNum2, 100); // bilangan kedua, jarak vertikal lebih besar
+      drawDashedLineWithLabel(0, num1, "red", step, viewMin, num1, 135);
+      drawDashedLineWithLabel(num1, num1 - num2, "blue", step, viewMin, displayNum2, 110);
 
-      // Bundaran hijau hasil
       drawResultCircle(num1 - num2, step, viewMin);
 
-      // Tampilkan hasil
       const resultDiv = document.getElementById('result');
       resultDiv.textContent = `${num1} - ${displayNum2} = ${num1 - num2}`;
     });
@@ -136,13 +134,12 @@ document.getElementById('startBtn').addEventListener('click', () => {
 });
 
 document.getElementById('refreshBtn').addEventListener('click', () => {
-  viewMin = -15;
-  viewMax = 15;
+  viewMin = -10;
+  viewMax = 10;
   document.getElementById('num1').value = "";
   document.getElementById('num2').value = "";
   document.getElementById('result').textContent = "";
   drawNumberLine();
 });
 
-// Inisialisasi
 drawNumberLine();
