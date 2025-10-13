@@ -15,12 +15,26 @@
     <div>Bilangan Pertama</div>
     <input type="number" id="num1" min="-25" max="25">
   </div>
-
-  <!-- Kotak tanda minus -->
   <div style="display: inline-block; text-align: center; margin:0 20px;">
-    <div style="font-size:24px; border:2px solid #ff9900; border-radius:5px; padding:5px 10px; background-color:#fff8dc;">-</div>
+    <div style="font-size:24px;"> - </div>
   </div>
-
   <div style="display: inline-block; text-align: center; margin:0 40px;">
     <div>Bilangan Kedua</div>
-    <input type="number" id="num2"
+    <input type="number" id="num2" min="-25" max="25">
+  </div>
+</div>
+
+<div style="margin-top:10px;">
+  <button id="startBtn">Mulai</button>
+  <button id="refreshBtn">Refresh</button>
+</div>
+
+<div id="container">
+  <canvas id="lineCanvas" width="900" height="250"></canvas>
+</div>
+
+<div id="result" class="result-box"></div>
+
+<script src="script.js"></script>
+</body>
+</html>
