@@ -1,18 +1,19 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Garis Bilangan Animasi</title>
+<title>Operasi Pengurangan Bilangan Bulat</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<h2>Garis Bilangan Interaktif Animasi</h2>
+<h2>Operasi Pengurangan Bilangan Bulat</h2>
 
 <div>
-  Angka Pertama: <input type="number" id="num1" min="-25" max="25">
-  Angka Kedua: <input type="number" id="num2" min="-25" max="25">
+  Bilangan Pertama: <input type="number" id="num1" min="-25" max="25">
+  <span style="font-size: 24px;"> - </span>
+  Bilangan Kedua: <input type="number" id="num2" min="-25" max="25">
 </div>
 <div>
   <button id="startBtn">Mulai</button>
@@ -20,9 +21,11 @@
 </div>
 
 <div id="container">
-  <canvas id="lineCanvas" width="800" height="120"></canvas>
+  <canvas id="lineCanvas" width="900" height="200"></canvas>
 </div>
 
-<script src="script.js"></script>
+<div id="result" style="font-size: 20px; margin-top: 10px; font-weight: bold;"></div>
+
 </body>
+<script src="script.js"></script>
 </html>
