@@ -1,220 +1,233 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Garis Bilangan Interaktif</title>
-<style>
-  body {
-    font-family: "Poppins", sans-serif;
-    text-align: center;
-    background: linear-gradient(180deg, #e0f7ff, #cce5ff);
-    min-height: 100vh;
-    padding-top: 40px;
-  }
-  h1 {
-    color: #005fa3;
-    text-shadow: 1px 1px #fff;
-  }
-  #garis-bilangan {
-    position: relative;
-    width: 80%;
-    height: 180px;
-    margin: 60px auto;
-    border-top: 4px solid black;
-    overflow: visible;
-  }
-  .angka {
-    position: absolute;
-    top: 40px;
-    transform: translateX(-50%);
-    font-weight: bold;
-    font-size: 16px;
-  }
-  .tanda {
-    position: absolute;
-    width: 2px;
-    height: 15px;
-    background-color: black;
-    top: 0;
-    transform: translateX(-50%);
-  }
-  #bola {
-    position: absolute;
-    bottom: 70px;
-    width: 35px;
-    height: 35px;
-    border-radius: 50%;
-    background-color: gold;
-    border: 2px solid orange;
-    transition: left 0.5s ease, background-color 0.3s;
-    z-index: 3;
-  }
-  .jejak {
-    position: absolute;
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    background-color: red;
-    bottom: 85px;
-    z-index: 1;
-  }
-  .panah {
-    position: absolute;
-    bottom: 120px;
-    width: 0;
-    height: 0;
-    border-top: 3px solid transparent;
-    border-bottom: 3px solid transparent;
-    z-index: 2;
-  }
-  .panah::before {
-    content: "";
-    position: absolute;
-    width: 60px;
-    height: 20px;
-    border-top: 3px solid;
-    border-radius: 50%;
-    animation: muncul 0.8s ease forwards;
-  }
-  @keyframes muncul {
-    from { width: 0; opacity: 0; }
-    to { width: 60px; opacity: 1; }
-  }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Garis Bilangan Interaktif</title>
+  <style>
+    body {
+      font-family: "Poppins", sans-serif;
+      background: linear-gradient(to bottom, #dff6ff, #ffffff);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 30px;
+    }
 
-  input, button {
-    margin: 5px;
-    padding: 8px;
-    font-size: 16px;
-    border-radius: 8px;
-  }
-  button {
-    cursor: pointer;
-    background-color: #005fa3;
-    color: white;
-    border: none;
-  }
-  button:hover {
-    background-color: #0078d4;
-  }
-  #hasil {
-    margin-top: 20px;
-    font-size: 20px;
-    color: #333;
-  }
-</style>
+    h1 {
+      color: #0077b6;
+      margin-bottom: 20px;
+    }
+
+    .number-line {
+      position: relative;
+      width: 800px;
+      height: 100px;
+      border-top: 4px solid #023e8a;
+      margin-top: 60px;
+    }
+
+    .tick {
+      position: absolute;
+      width: 2px;
+      height: 15px;
+      background-color: #023e8a;
+      top: -8px;
+    }
+
+    .label {
+      position: absolute;
+      top: 10px;
+      font-size: 14px;
+      color: #03045e;
+    }
+
+    .ball {
+      position: absolute;
+      top: -25px;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background-color: #ffd60a;
+      box-shadow: 0 0 10px #ffd60a;
+      transition: left 0.4s ease;
+    }
+
+    .trail {
+      position: absolute;
+      width: 20px;
+      height: 4px;
+      background-color: red;
+      top: -10px;
+      border-radius: 2px;
+    }
+
+    .controls {
+      margin-top: 20px;
+      text-align: center;
+    }
+
+    input, select, button {
+      font-size: 16px;
+      padding: 6px 10px;
+      margin: 5px;
+      border-radius: 8px;
+      border: 2px solid #00b4d8;
+    }
+
+    button {
+      background-color: #00b4d8;
+      color: white;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background-color: #0077b6;
+    }
+
+    #result {
+      font-size: 22px;
+      color: #0077b6;
+      margin-top: 20px;
+      font-weight: bold;
+    }
+
+    .arrow {
+      position: absolute;
+      top: -40px;
+      font-size: 18px;
+      color: red;
+    }
+  </style>
 </head>
 <body>
-  <h1>🟡 Garis Bilangan Interaktif</h1>
-  <p>Masukkan bilangan dan pilih operasi untuk melihat pergerakan bola kuning dengan animasi & suara!</p>
+  <h1>🧮 Garis Bilangan Interaktif</h1>
 
-  <div>
-    <label>Bilangan:</label>
-    <input type="number" id="inputAngka" value="1" min="-10" max="10">
-    <button onclick="tambah()">➕ Tambah</button>
-    <button onclick="kurang()">➖ Kurang</button>
-    <button onclick="reset()">🔄 Reset</button>
+  <div class="controls">
+    <label>Bilangan 1:</label>
+    <input type="number" id="num1" value="0" min="-10" max="10" />
+    <label>Operasi:</label>
+    <select id="operation">
+      <option value="+">+</option>
+      <option value="-">-</option>
+    </select>
+    <label>Bilangan 2:</label>
+    <input type="number" id="num2" value="0" min="-10" max="10" />
+    <button onclick="start()">Hitung</button>
+    <button onclick="resetLine()">🔄 Reset</button>
   </div>
 
-  <div id="garis-bilangan"></div>
-  <div id="hasil"></div>
+  <div class="number-line" id="numberLine"></div>
+  <div id="result"></div>
 
-  <audio id="popSound" src="https://actions.google.com/sounds/v1/cartoon/pop.ogg"></audio>
+  <audio id="popSound">
+    <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_2bfcf8b0db.mp3?filename=pop-94319.mp3" type="audio/mpeg" />
+  </audio>
 
   <script>
-    const garis = document.getElementById("garis-bilangan");
-    const hasil = document.getElementById("hasil");
+    const line = document.getElementById("numberLine");
     const popSound = document.getElementById("popSound");
-    const min = -10, max = 10;
-    const step = garis.offsetWidth / (max - min);
-    let posisi = 0;
+    const startX = 400; // posisi tengah (nol)
+    const gap = 40; // jarak antar angka
 
-    // Buat garis bilangan
-    for (let i = min; i <= max; i++) {
-      const x = ((i - min) / (max - min)) * garis.offsetWidth;
-      const tanda = document.createElement("div");
-      tanda.classList.add("tanda");
-      tanda.style.left = `${x}px`;
-      garis.appendChild(tanda);
+    // Buat garis bilangan dari -10 sampai 10
+    for (let i = -10; i <= 10; i++) {
+      const tick = document.createElement("div");
+      tick.className = "tick";
+      tick.style.left = `${startX + i * gap}px`;
+      line.appendChild(tick);
 
-      const angka = document.createElement("div");
-      angka.classList.add("angka");
-      angka.style.left = `${x}px`;
-      angka.textContent = i;
-      garis.appendChild(angka);
+      const label = document.createElement("div");
+      label.className = "label";
+      label.style.left = `${startX + i * gap - 5}px`;
+      label.textContent = i;
+      line.appendChild(label);
     }
 
-    // Buat bola kuning
-    const bola = document.createElement("div");
-    bola.id = "bola";
-    garis.appendChild(bola);
-    function updatePosisi() {
-      const left = ((posisi - min) / (max - min)) * garis.offsetWidth;
-      bola.style.left = `${left}px`;
+    // Buat bola awal
+    const ball = document.createElement("div");
+    ball.className = "ball";
+    line.appendChild(ball);
+    ball.style.left = `${startX - 15}px`;
+
+    let currentPos = 0;
+    let trails = [];
+
+    function start() {
+      const num1 = parseInt(document.getElementById("num1").value);
+      const num2 = parseInt(document.getElementById("num2").value);
+      const op = document.getElementById("operation").value;
+
+      let result;
+      if (op === "+") result = num1 + num2;
+      else result = num1 - num2;
+
+      if (result > 10 || result < -10) {
+        alert("Hasil di luar jangkauan garis bilangan (-10 sampai 10).");
+        return;
+      }
+
+      moveBall(num1, op, num2, result);
     }
-    updatePosisi();
 
-    const warnaBola = ["gold", "orange", "limegreen", "deepskyblue", "violet", "salmon"];
+    async function moveBall(num1, op, num2, result) {
+      resetTrails();
+      currentPos = num1;
+      ball.style.left = `${startX + num1 * gap - 15}px`;
 
-    function buatPanah(arah, posisiSekarang) {
-      const panah = document.createElement("div");
-      panah.classList.add("panah");
-      const left = ((posisiSekarang - min) / (max - min)) * garis.offsetWidth;
-      panah.style.left = `${left + (arah === 1 ? 5 : -65)}px`;
-      panah.style.borderColor = arah === 1 ? "green" : "orange";
-      panah.querySelector;
-      panah.innerHTML = `<div style="border-top-color:${arah === 1 ? 'green' : 'orange'}"></div>`;
-      garis.appendChild(panah);
-      setTimeout(() => panah.remove(), 1200);
-    }
+      const steps = Math.abs(num2);
+      const direction = op === "+" ? 1 : -1;
 
-    function lompat(arah, jumlah) {
-      let langkah = 0;
-      const interval = setInterval(() => {
-        if (langkah === Math.abs(jumlah)) {
-          clearInterval(interval);
-          hasil.textContent = `Posisi akhir: ${posisi}`;
-          return;
-        }
-        posisi += arah;
+      for (let i = 1; i <= steps; i++) {
+        await new Promise(r => setTimeout(r, 600));
+        currentPos += direction;
+
+        // jejak merah
+        const trail = document.createElement("div");
+        trail.className = "trail";
+        trail.style.left = `${startX + (currentPos - direction / 2) * gap - 10}px`;
+        trail.style.backgroundColor = "red";
+        line.appendChild(trail);
+        trails.push(trail);
+
+        // panah kecil
+        const arrow = document.createElement("div");
+        arrow.className = "arrow";
+        arrow.innerHTML = direction === 1 ? "➡️" : "⬅️";
+        arrow.style.left = `${startX + currentPos * gap - 10}px`;
+        line.appendChild(arrow);
+        setTimeout(() => arrow.remove(), 500);
+
         popSound.currentTime = 0;
         popSound.play();
 
-        // buat jejak merah
-        const jejak = document.createElement("div");
-        jejak.classList.add("jejak");
-        const left = ((posisi - min) / (max - min)) * garis.offsetWidth;
-        jejak.style.left = `${left}px`;
-        garis.appendChild(jejak);
+        ball.style.left = `${startX + currentPos * gap - 15}px`;
+        ball.style.backgroundColor = randomColor();
+      }
 
-        // panah animasi
-        buatPanah(arah, posisi);
-
-        // ubah warna bola
-        bola.style.backgroundColor = warnaBola[Math.floor(Math.random() * warnaBola.length)];
-        updatePosisi();
-        langkah++;
-      }, 600);
+      document.getElementById("result").textContent = 
+        `Hasil: ${num1} ${op} ${num2} = ${result}`;
     }
 
-    function tambah() {
-      const n = parseInt(document.getElementById("inputAngka").value);
-      if (posisi + n > max) return alert("Keluar dari batas garis!");
-      lompat(1, n);
+    function resetTrails() {
+      trails.forEach(t => t.remove());
+      trails = [];
     }
 
-    function kurang() {
-      const n = parseInt(document.getElementById("inputAngka").value);
-      if (posisi - n < min) return alert("Keluar dari batas garis!");
-      lompat(-1, n);
+    function resetLine() {
+      resetTrails();
+      document.getElementById("num1").value = 0;
+      document.getElementById("num2").value = 0;
+      document.getElementById("operation").value = "+";
+      document.getElementById("result").textContent = "";
+      ball.style.left = `${startX - 15}px`;
+      ball.style.backgroundColor = "#ffd60a";
     }
 
-    function reset() {
-      posisi = 0;
-      hasil.textContent = "";
-      garis.querySelectorAll(".jejak").forEach(j => j.remove());
-      bola.style.backgroundColor = "gold";
-      updatePosisi();
+    function randomColor() {
+      const colors = ["#ffd60a", "#ff6b6b", "#90e0ef", "#06d6a0", "#f4a261"];
+      return colors[Math.floor(Math.random() * colors.length)];
     }
   </script>
 </body>
